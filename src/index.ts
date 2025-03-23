@@ -1,9 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import connectDB from '../src/components/config/database';
-import authRoutes from '../src/components/auth/auth.routes';
+import connectDB from './components/config/database';
+import authRoutes from './components/auth/auth.routes';
 import cors from 'cors';
-import roleRoutes from '../src/components/role/role.routes';
+import roleRoutes from './components/role/role.routes';
 
 dotenv.config(); // Load .env variables
 
