@@ -2,8 +2,8 @@ import mongoose from 'mongoose';
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect('mongodb+srv://faheemakhtar19730:Faheemkh12@cluster0.tvmmvdg.mongodb.net/', {
-      dbName: 'your-db-name', // optional: specify your DB name
+    const conn = await mongoose.connect(process.env.MONGO_URI as string, {
+      dbName: 'scanxpert', // optional: specify your DB name
     });
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
