@@ -9,7 +9,7 @@ export const verifyIdToken = async (idToken: string) => {
 
 export const checkOrCreateUser = async (
   phone: string,
-  data?: { name: string; age: number; sex: string }
+  data?: { name: string; age: number; sex: string, report?: string[] }
 ) => {
   const existingUser = await UserRepo.findUserByPhone(phone);
   if (existingUser) return { exists: true, user: existingUser };
@@ -30,7 +30,7 @@ export const checkOrCreateUser = async (
     name: data.name,
     age: data.age,
     sex: data.sex,
-    report: [],
+    report: data.report || [],
     role: roleId, // Pass a single ID
   });
 

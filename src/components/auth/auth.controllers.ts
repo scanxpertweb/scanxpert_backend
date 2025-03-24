@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import * as AuthService from './auth.services';
+import { uploadToCloudinary } from '../utils/cloudinary';
 
 export const checkUserExists = async (req: Request, res: Response) => {
   try {
@@ -32,14 +33,37 @@ export const verifyIdToken = async (req: Request, res: Response) => {
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    console.log('Registering user:', req.body);
     const { phone, name, sex, age } = req.body;
-    const user = await AuthService.checkOrCreateUser(phone, { name, sex, age });
+
+    if (!phone || !name || !sex || !age) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const reportFiles = req.files as Express.Multer.File[] | undefined;
+
+    let reportUrls: string[] = [];
+
+    if (reportFiles && reportFiles.length > 0) {
+      const uploadPromises = reportFiles.map((file) =>
+        uploadToCloudinary(file.buffer, `${Date.now()}_${file.originalname}`)
+      );
+      reportUrls = await Promise.all(uploadPromises);
+    }
+
+    const user = await AuthService.checkOrCreateUser(phone, {
+      name,
+      sex,
+      age: Number(age),
+      report: reportUrls,
+    });
+
     return res.status(201).json(user);
   } catch (err) {
+    console.error('Registration failed:', err);
     return res.status(500).json({ message: 'Registration failed', error: err });
   }
 };
+
 
 
 // Controller
