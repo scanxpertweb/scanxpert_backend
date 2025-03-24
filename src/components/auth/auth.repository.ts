@@ -124,35 +124,36 @@ export const softDeleteUserById = async (id: string) => {
 
 // make a seprate function to update only report 
 
-export const updateReport = async (id: string, report: string[]) => {
+// src/repo/UserRepo.ts
+
+export const updateReport = async (id: string, newReportUrl: string[]) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { $set: { report: report } },
+      { $set: { report: newReportUrl } }, // Replaces the entire report array
       { new: true, runValidators: true }
     );
     return updatedUser;
-  }
- 
-  catch (error) {
+  } catch (error) {
     throw new Error((error as Error).message);
   }
-}
+};
+
 
 // make a function to delete a report from the report array
 
-export const deleteReport = async (id: string, report: string) => {
+export const deleteReport = async (id: string, reportUrl: string) => {
   try {
-    const updated = await User.findByIdAndUpdate
-      (id,
-        { $pull: { report: report } },
-        { new: true, runValidators: true }
-      );
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $pull: { report: reportUrl } }, // Removes the matching report URL from the array
+      { new: true, runValidators: true }
+    );
 
-      return updated;
+    return updatedUser;
+  } catch (error) {
+    throw new Error(`Failed to delete report: ${(error as Error).message}`);
   }
-  catch (error) {
-    throw new Error((error as Error).message);
-  }
-}
+};
+
 

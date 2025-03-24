@@ -44,10 +44,9 @@ export const checkUserOnly = async (phone: string) => {
   return !!existingUser;
 };
 
-export const updateReport = async (id: string, report: string) => {
-  const updatedUser = await UserRepo.updateReport(id, [report]);
-  return updatedUser;
-}
+export const updateReport = async (id: string, reportUrl: string[]) => {
+  return await UserRepo.updateReport(id, reportUrl);
+};
 
 export const findAllUsers = async (params: any) => {
   return await UserRepo.findAllUsers(params);

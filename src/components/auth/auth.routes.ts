@@ -30,9 +30,20 @@ router.post('/verify-token', (req: Request, res: Response) => {
   );
 
 
-  router.post('/report/:id', (req: Request, res: Response) => {
+  router.post('/report/:id',reportUpload.array('report', 5), (req: Request, res: Response) => {
     AuthController.uploadReportFile(req, res);
   });
+
+  router.post('/delete/:id', (req: Request, res: Response) => {
+    AuthController.deleteReport(req, res);
+  }
+  );
+
+  router.delete('/user/:id', (req: Request, res: Response) => {
+    AuthController.deleteUserById(req,
+      res);
+  }
+  );
 
 
    

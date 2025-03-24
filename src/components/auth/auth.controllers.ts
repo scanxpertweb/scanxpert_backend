@@ -70,25 +70,32 @@ export const registerUser = async (req: Request, res: Response) => {
 export const uploadReportFile = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const file = req.file as Express.Multer.File;
+    const files = req.files as Express.Multer.File[];
 
-    if (!file || !file.path) {
-      return res.status(400).json({ message: 'No file uploaded' });
+    if (!files || files.length === 0) {
+      return res.status(400).json({ message: 'No files uploaded' });
     }
 
-    const updatedUser = await AuthService.updateReport(id, file.path);
+    // Upload each file to Cloudinary
+    const uploadPromises = files.map((file) =>
+      uploadToCloudinary(file.buffer, `${Date.now()}_${file.originalname}`)
+    );
+    const reportUrls = await Promise.all(uploadPromises);
+
+    // Replace old report(s) with the new ones
+    const updatedUser = await AuthService.updateReport(id, reportUrls);
 
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    res.status(200).json({
-      message: 'Report uploaded successfully',
-      reportUrl: file.path,
+    return res.status(200).json({
+      message: 'Reports replaced successfully',
+      reportUrls,
       user: updatedUser,
     });
   } catch (error) {
-    res.status(500).json({ message: (error as Error).message });
+    return res.status(500).json({ message: (error as Error).message });
   }
 };
 
