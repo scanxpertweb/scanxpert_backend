@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { User } from '../collections/auth.model';
 
 
@@ -81,7 +81,8 @@ export const updateUserById = async (
     name: string;
     age: number;
     sex: string;
-    report: string[];
+    report?: string[];
+    role?: mongoose.Types.ObjectId;
   }>
 ) => {
   try {
@@ -89,7 +90,10 @@ export const updateUserById = async (
       id,
       { $set: data },
       { new: true, runValidators: true }
-    );
+    ).populate({
+      path: 'role',
+      model: 'Role',
+    });
 
     if (!updatedUser) {
       throw new Error('User not found');
@@ -100,6 +104,7 @@ export const updateUserById = async (
     throw new Error((error as Error).message);
   }
 };
+
 
 
 export const softDeleteUserById = async (id: string) => {

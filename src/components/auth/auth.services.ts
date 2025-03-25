@@ -61,8 +61,16 @@ export const softDeleteUserById= async (id:string)=>{
 }
 
 export const updateUserById = async (id: string, data: Partial<IUser>) => {
-  return await UserRepo.updateUserById(id, data);
-}
+  try {
+    const updatedUser = await UserRepo.updateUserById(id, data);
+    if (!updatedUser) {
+      throw new Error('User not found');
+    }
+    return updatedUser;
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
+};
 
 export const deleteReport = async (id: string, report: string) => {
   return await UserRepo.deleteReport(id, report);
