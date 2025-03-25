@@ -9,7 +9,7 @@ export const verifyIdToken = async (idToken: string) => {
 
 export const checkOrCreateUser = async (
   phone: string,
-  data?: { name: string; age: number; sex: string, report?: string[] }
+  data?: { name: string; age: number; sex: string, role?:string, report?: string[], }
 ) => {
   const existingUser = await UserRepo.findUserByPhone(phone);
   if (existingUser) return { exists: true, user: existingUser };
@@ -19,7 +19,7 @@ export const checkOrCreateUser = async (
   const role = await findRole();
 
   // Find the role for 'user' and get a single _id
-  const userRole = role.find((r) => r.name === "user"); 
+  const userRole = role.find((r) => r.name === data.role); 
   const roleId = userRole ? userRole._id : undefined; 
 
   if (!roleId) throw new Error("User role not found"); 
