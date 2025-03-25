@@ -19,7 +19,7 @@ export const checkOrCreateUser = async (
   const role = await findRole();
 
   // Find the role for 'user' and get a single _id
-  const userRole = role.find((r) => r.name === data.role); 
+  const userRole = role.find((r) => r.name === data.role || "patient"); 
   const roleId = userRole ? userRole._id : undefined; 
 
   if (!roleId) throw new Error("User role not found"); 

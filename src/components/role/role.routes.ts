@@ -12,7 +12,7 @@ router.get('/all',(req: Request, res: Response) => {
   }
 );
 
-router.put('/update/:id',(req: Request, res: Response) => {
+router.patch('/update/:id',(req: Request, res: Response) => {
     RoleController.updateRole(req, res);
   }
 );

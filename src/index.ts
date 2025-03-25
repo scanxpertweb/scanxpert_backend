@@ -9,7 +9,13 @@ dotenv.config(); // Load .env variables
 
 const app = express();
 
-app.use(cors());
+app.use(
+    cors({
+      origin: "https://scanxperts.vercel.app",
+      methods: ["GET", "POST", "PATCH", "DELETE"], 
+      credentials: true, 
+    })
+  );
 connectDB(); // ⬅️ Connect to MongoDB
 
 app.use(express.json());
