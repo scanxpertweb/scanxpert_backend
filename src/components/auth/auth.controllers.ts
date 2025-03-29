@@ -31,6 +31,41 @@ export const verifyIdToken = async (req: Request, res: Response) => {
   }
 };
 
+// export const registerUser = async (req: Request, res: Response) => {
+//   try {
+//     const { phone, name, sex, age } = req.body;
+
+//     if (!phone || !name || !sex || !age) {
+//       return res.status(400).json({ message: 'Missing required fields' });
+//     }
+
+//     const reportFiles = req.files as Express.Multer.File[] | undefined;
+
+//     let reportUrls: string[] = [];
+
+//     if (reportFiles && reportFiles.length > 0) {
+//       const uploadPromises = reportFiles.map((file) =>
+//         uploadToCloudinary(file.buffer, `${Date.now()}_${file.originalname}`)
+//       );
+//       reportUrls = await Promise.all(uploadPromises);
+//     }
+
+//     const user = await AuthService.checkOrCreateUser(phone, {
+//       name,
+//       sex,
+//       age: Number(age),
+//       report: reportUrls,
+//     });
+
+//     return res.status(201).json(user);
+//   } catch (err) {
+//     console.error('Registration failed:', err);
+//     return res.status(500).json({ message: 'Registration failed', error: (err as Error).message });
+//   }
+// };
+
+
+
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { phone, name, sex, age } = req.body;
@@ -59,11 +94,10 @@ export const registerUser = async (req: Request, res: Response) => {
 
     return res.status(201).json(user);
   } catch (err) {
-    console.error('Registration failed:', (err as Error).message);
-    return res.status(500).json({ message: (err as Error).message });
+    console.error('Registration failed:', err);
+    return res.status(500).json({ message: 'Registration failed', error: (err as Error).message });
   }
 };
-
 
 
 // Controller
