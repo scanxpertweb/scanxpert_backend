@@ -19,6 +19,7 @@ app.use(
 connectDB(); // ⬅️ Connect to MongoDB
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', authRoutes)
 app.use('/api/role', roleRoutes)
