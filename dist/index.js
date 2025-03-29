@@ -14,7 +14,7 @@ const multer_2 = require("./components/utils/multer");
 dotenv_1.default.config(); // Load .env variables
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
-    origin: "https://scanxperts.vercel.app",
+    origin: "*",
     methods: ["GET", "POST", "PATCH", "DELETE"],
     credentials: true,
 }));

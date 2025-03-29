@@ -13,7 +13,7 @@ const app = express();
 
 app.use(
     cors({
-      origin: "https://scanxperts.vercel.app",
+      origin: "*",
       methods: ["GET", "POST", "PATCH", "DELETE"], 
       credentials: true, 
     })

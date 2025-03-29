@@ -25,57 +25,18 @@ export const verifyIdToken = async (req: Request, res: Response) => {
     }
 
     const result = await AuthService.checkOrCreateUser(phone);
-    return res.status(200).json({ exists: result.exists });
+    return res.status(200).json({ exists: result.exists, userId: result.user._id, role: result.user.role });
   } catch (err) {
     return res.status(401).json({ message: 'Invalid token', error: err });
   }
 };
 
-// export const registerUser = async (req: Request, res: Response) => {
-//   try {
-//     const { phone, name, sex, age } = req.body;
-
-//     if (!phone || !name || !sex || !age) {
-//       return res.status(400).json({ message: 'Missing required fields' });
-//     }
-
-//     const reportFiles = req.files as Express.Multer.File[] | undefined;
-
-//     let reportUrls: string[] = [];
-
-//     if (reportFiles && reportFiles.length > 0) {
-//       const uploadPromises = reportFiles.map((file) =>
-//         uploadToCloudinary(file.buffer, `${Date.now()}_${file.originalname}`)
-//       );
-//       reportUrls = await Promise.all(uploadPromises);
-//     }
-
-//     const user = await AuthService.checkOrCreateUser(phone, {
-//       name,
-//       sex,
-//       age: Number(age),
-//       report: reportUrls,
-//     });
-
-//     return res.status(201).json(user);
-//   } catch (err) {
-//     console.error('Registration failed:', err);
-//     return res.status(500).json({ message: 'Registration failed', error: (err as Error).message });
-//   }
-// };
-
-
-
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    console.log("Incoming Request Body:", req.body);
-    console.log("Incoming Files:", req.files);
-
     const { phone, name, sex, age } = req.body;
 
     if (!phone || !name || !sex || !age) {
-      console.log("❌ Missing required fields:", { phone, name, sex, age });
-      return res.status(400).json({ message: "Missing required fields" });
+      return res.status(400).json({ message: 'Missing required fields' });
     }
 
     const reportFiles = req.files as Express.Multer.File[] | undefined;
@@ -96,17 +57,15 @@ export const registerUser = async (req: Request, res: Response) => {
       report: reportUrls,
     });
 
-    console.log("✅ User registered successfully:", user);
     return res.status(201).json(user);
   } catch (err) {
-    console.error("❌ Registration failed:", err);
-    return res.status(500).json({
-      message: "Registration failed",
-      error: (err as Error).message,
-      stack: (err as Error).stack,
-    });
+    console.error('Registration failed:', err);
+    return res.status(500).json({ message: 'Registration failed', error: (err as Error).message });
   }
 };
+
+
+
 
 
 
