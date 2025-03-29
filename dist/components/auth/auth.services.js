@@ -49,32 +49,38 @@ exports.deleteReport = exports.updateUserById = exports.softDeleteUserById = exp
 const admin_1 = __importDefault(require("../firebase/admin"));
 const UserRepo = __importStar(require("./auth.repository"));
 const role_repository_1 = require("../role/role.repository");
+const mongoose_1 = __importDefault(require("mongoose"));
 const verifyIdToken = (idToken) => __awaiter(void 0, void 0, void 0, function* () {
     return yield admin_1.default.auth().verifyIdToken(idToken);
 });
 exports.verifyIdToken = verifyIdToken;
 const checkOrCreateUser = (phone, data) => __awaiter(void 0, void 0, void 0, function* () {
-    const existingUser = yield UserRepo.findUserByPhone(phone);
-    if (existingUser)
-        return { exists: true, user: existingUser };
-    if (!data)
-        throw new Error("User data required for registration");
-    const role = yield (0, role_repository_1.findRole)();
-    // Find the role for 'user' and get a single _id
-    const userRole = role.find((r) => r.name === "user");
-    const roleId = userRole ? userRole._id : undefined;
-    if (!roleId)
-        throw new Error("User role not found");
-    // Create new user
-    const newUser = yield UserRepo.createUser({
-        phone,
-        name: data.name,
-        age: data.age,
-        sex: data.sex,
-        report: [],
-        role: roleId, // Pass a single ID
-    });
-    return { exists: false, user: newUser };
+    try {
+        const existingUser = yield UserRepo.findUserByPhone(phone);
+        if (existingUser)
+            return { exists: true, user: existingUser };
+        if (!data)
+            throw new Error("User data required for registration");
+        const role = yield (0, role_repository_1.findRole)();
+        // Find the role for 'user' and get a single _id
+        const userRole = role.find((r) => r.name === (data.role || "patient"));
+        const roleId = (userRole === null || userRole === void 0 ? void 0 : userRole._id) || new mongoose_1.default.Types.ObjectId('67e19486cae62de981c6062b');
+        if (!roleId)
+            throw new Error("User role not found");
+        // Create new user
+        const newUser = yield UserRepo.createUser({
+            phone,
+            name: data.name,
+            age: data.age,
+            sex: data.sex,
+            report: data.report || [],
+            role: roleId, // Pass a single ID
+        });
+        return { exists: false, user: newUser };
+    }
+    catch (error) {
+        throw new Error(error.message);
+    }
 });
 exports.checkOrCreateUser = checkOrCreateUser;
 const checkUserOnly = (phone) => __awaiter(void 0, void 0, void 0, function* () {
@@ -82,9 +88,8 @@ const checkUserOnly = (phone) => __awaiter(void 0, void 0, void 0, function* () 
     return !!existingUser;
 });
 exports.checkUserOnly = checkUserOnly;
-const updateReport = (id, report) => __awaiter(void 0, void 0, void 0, function* () {
-    const updatedUser = yield UserRepo.updateReport(id, [report]);
-    return updatedUser;
+const updateReport = (id, reportUrl) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield UserRepo.updateReport(id, reportUrl);
 });
 exports.updateReport = updateReport;
 const findAllUsers = (params) => __awaiter(void 0, void 0, void 0, function* () {
@@ -100,7 +105,16 @@ const softDeleteUserById = (id) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.softDeleteUserById = softDeleteUserById;
 const updateUserById = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield UserRepo.updateUserById(id, data);
+    try {
+        const updatedUser = yield UserRepo.updateUserById(id, data);
+        if (!updatedUser) {
+            throw new Error('User not found');
+        }
+        return updatedUser;
+    }
+    catch (error) {
+        throw new Error(error.message);
+    }
 });
 exports.updateUserById = updateUserById;
 const deleteReport = (id, report) => __awaiter(void 0, void 0, void 0, function* () {

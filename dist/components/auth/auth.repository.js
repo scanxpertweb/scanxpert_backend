@@ -16,7 +16,12 @@ const findUserByPhone = (phone) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.findUserByPhone = findUserByPhone;
 const createUser = (data) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield auth_model_1.User.create(data);
+    try {
+        return yield auth_model_1.User.create(data);
+    }
+    catch (error) {
+        throw new Error(error.message);
+    }
 });
 exports.createUser = createUser;
 const findUserById = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -64,7 +69,10 @@ const findAllUsers = (...args_1) => __awaiter(void 0, [...args_1], void 0, funct
 exports.findAllUsers = findAllUsers;
 const updateUserById = (id, data) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const updatedUser = yield auth_model_1.User.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true });
+        const updatedUser = yield auth_model_1.User.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true }).populate({
+            path: 'role',
+            model: 'Role',
+        });
         if (!updatedUser) {
             throw new Error('User not found');
         }
@@ -89,9 +97,11 @@ const softDeleteUserById = (id) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.softDeleteUserById = softDeleteUserById;
 // make a seprate function to update only report 
-const updateReport = (id, report) => __awaiter(void 0, void 0, void 0, function* () {
+// src/repo/UserRepo.ts
+const updateReport = (id, newReportUrl) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const updatedUser = yield auth_model_1.User.findByIdAndUpdate(id, { $set: { report: report } }, { new: true, runValidators: true });
+        const updatedUser = yield auth_model_1.User.findByIdAndUpdate(id, { $set: { report: newReportUrl } }, // Replaces the entire report array
+        { new: true, runValidators: true });
         return updatedUser;
     }
     catch (error) {
@@ -100,13 +110,14 @@ const updateReport = (id, report) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.updateReport = updateReport;
 // make a function to delete a report from the report array
-const deleteReport = (id, report) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteReport = (id, reportUrl) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const updated = yield auth_model_1.User.findByIdAndUpdate(id, { $pull: { report: report } }, { new: true, runValidators: true });
-        return updated;
+        const updatedUser = yield auth_model_1.User.findByIdAndUpdate(id, { $pull: { report: reportUrl } }, // Removes the matching report URL from the array
+        { new: true, runValidators: true });
+        return updatedUser;
     }
     catch (error) {
-        throw new Error(error.message);
+        throw new Error(`Failed to delete report: ${error.message}`);
     }
 });
 exports.deleteReport = deleteReport;

@@ -38,11 +38,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const AuthController = __importStar(require("./auth.controllers"));
+const multer_1 = require("../utils/multer");
 const router = express_1.default.Router();
 router.post('/verify-token', (req, res) => {
     AuthController.verifyIdToken(req, res);
 });
-router.post('/register', (req, res) => {
+router.post('/register', multer_1.reportUpload.array('report', 5), (req, res) => {
     AuthController.registerUser(req, res);
 });
 router.post('/check-user', (req, res) => {
@@ -57,7 +58,13 @@ router.get('/user/:id', (req, res) => {
 router.patch("/user/:id", (req, res) => {
     AuthController.updateUserById(req, res);
 });
-router.post('/report/:id', (req, res) => {
+router.post('/report/:id', multer_1.reportUpload.array('report', 5), (req, res) => {
     AuthController.uploadReportFile(req, res);
+});
+router.post('/delete/:id', (req, res) => {
+    AuthController.deleteReport(req, res);
+});
+router.delete('/user/:id', (req, res) => {
+    AuthController.deleteUserById(req, res);
 });
 exports.default = router;

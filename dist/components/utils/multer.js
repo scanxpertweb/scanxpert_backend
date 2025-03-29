@@ -3,11 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.reportUpload = void 0;
+exports.reportUpload = exports.storage = void 0;
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 // Multer setup - store files temporarily in memory or disk
-const storage = multer_1.default.memoryStorage(); // or use diskStorage if needed
+exports.storage = multer_1.default.memoryStorage(); // or use diskStorage if needed
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /pdf|doc|docx|jpg|jpeg|png/;
     const extname = allowedTypes.test(path_1.default.extname(file.originalname).toLowerCase());
@@ -20,7 +20,7 @@ const fileFilter = (req, file, cb) => {
     }
 };
 exports.reportUpload = (0, multer_1.default)({
-    storage,
+    storage: exports.storage,
     fileFilter,
     limits: {
         fileSize: 10 * 1024 * 1024, // 10MB limit

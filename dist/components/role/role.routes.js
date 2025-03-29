@@ -45,7 +45,7 @@ router.post('/add', (req, res) => {
 router.get('/all', (req, res) => {
     RoleController.findAllRole(req, res);
 });
-router.put('/update/:id', (req, res) => {
+router.patch('/update/:id', (req, res) => {
     RoleController.updateRole(req, res);
 });
 exports.default = router;
