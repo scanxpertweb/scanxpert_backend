@@ -20,7 +20,11 @@ export const createUser = async (data: {
   report?: string[];
   role?: mongoose.Types.ObjectId;
 }) => {
-  return await User.create(data);
+  try {
+    return await User.create(data);
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
 };
 
 export const findUserById = async (id: string) => {

@@ -12,7 +12,8 @@ export const checkOrCreateUser = async (
   phone: string,
   data?: { name: string; age: number; sex: string, role?:string, report?: string[], }
 ) => {
-  const existingUser = await UserRepo.findUserByPhone(phone);
+  try {
+    const existingUser = await UserRepo.findUserByPhone(phone);
   if (existingUser) return { exists: true, user: existingUser };
 
   if (!data) throw new Error("User data required for registration");
@@ -36,6 +37,9 @@ export const checkOrCreateUser = async (
   });
 
   return { exists: false, user: newUser };
+  } catch (error) {
+    throw new Error((error as Error).message);
+  }
 };
 
 
