@@ -68,36 +68,72 @@ export const verifyIdToken = async (req: Request, res: Response) => {
 
 export const registerUser = async (req: Request, res: Response) => {
   try {
+    console.log("🔹 Incoming request body:", req.body);
+
+    // Extract user details
     const { phone, name, sex, age } = req.body;
 
+    // Validate required fields
     if (!phone || !name || !sex || !age) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      console.error("❌ Missing required fields:", { phone, name, sex, age });
+      return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const reportFiles = req.files as Express.Multer.File[] | undefined;
+    console.log("✅ Fields validated successfully.");
 
+    // Handle file uploads
+    const reportFiles = req.files as Express.Multer.File[] | undefined;
     let reportUrls: string[] = [];
 
     if (reportFiles && reportFiles.length > 0) {
-      const uploadPromises = reportFiles.map((file) =>
-        uploadToCloudinary(file.buffer, `${Date.now()}_${file.originalname}`)
-      );
-      reportUrls = await Promise.all(uploadPromises);
+      console.log("📁 Uploading files to Cloudinary:", reportFiles.length);
+
+      try {
+        const uploadPromises = reportFiles.map((file) =>
+          uploadToCloudinary(file.buffer, `${Date.now()}_${file.originalname}`)
+        );
+        reportUrls = await Promise.all(uploadPromises);
+        console.log("✅ File upload successful:", reportUrls);
+      } catch (uploadError) {
+        console.error("❌ Cloudinary upload failed:", uploadError);
+        return res.status(500).json({
+          message: "File upload failed",
+          error: (uploadError as Error).message,
+        });
+      }
     }
 
-    const user = await AuthService.checkOrCreateUser(phone, {
-      name,
-      sex,
-      age: Number(age),
-      report: reportUrls,
-    });
+    console.log("🔹 Creating or checking user in database...");
 
+    // Check if user exists or create new user
+    let user;
+    try {
+      user = await AuthService.checkOrCreateUser(phone, {
+        name,
+        sex,
+        age: Number(age),
+        report: reportUrls,
+      });
+      console.log("✅ User created successfully:", user);
+    } catch (dbError) {
+      console.error("❌ Database operation failed:", dbError);
+      return res.status(500).json({
+        message: "Database operation failed",
+        error: (dbError as Error).message,
+      });
+    }
+
+    // Send response
     return res.status(201).json(user);
   } catch (err) {
-    console.error('Registration failed:', err);
-    return res.status(500).json({ message: 'Registration failed', error: (err as Error).message });
+    console.error("❌ Unexpected error during registration:", err);
+    return res.status(500).json({
+      message: "Registration failed due to an unexpected error",
+      error: (err as Error).message,
+    });
   }
 };
+
 
 
 // Controller
