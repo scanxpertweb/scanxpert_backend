@@ -12,7 +12,7 @@ const app = express();
 
 app.use(
     cors({
-      origin: ["http://localhost:5000", "https://scanxperts.vercel.app"],
+      origin: ["http://localhost:5173", "https://scanxperts.vercel.app"],
       methods: ["GET", "POST", "PATCH", "DELETE"], 
       credentials: true, 
     })

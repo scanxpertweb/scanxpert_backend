@@ -41,10 +41,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteReport = exports.deleteUserById = exports.updateUserById = exports.findUserById = exports.findAllUsers = exports.uploadReportFile = exports.registerUser = exports.verifyIdToken = exports.checkUserExists = void 0;
 const AuthService = __importStar(require("./auth.services"));
 const cloudinary_1 = require("../utils/cloudinary");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const checkUserExists = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { phone } = req.body;
@@ -68,7 +72,8 @@ const verifyIdToken = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             return res.status(400).json({ message: 'Phone number is required' });
         }
         const result = yield AuthService.checkOrCreateUser(phone);
-        return res.status(200).json({ exists: result.exists, userId: result.user._id, role: result.user.role });
+        const token = jsonwebtoken_1.default.sign({ _id: result.user._id }, process.env.JWT_SECRET, { expiresIn: parseInt(process.env.JWT_EXPIRES_IN, 10) });
+        return res.status(200).json({ exists: result.exists, userId: result.user._id, role: result.user.role, token: token });
     }
     catch (err) {
         return res.status(401).json({ message: 'Invalid token', error: err });

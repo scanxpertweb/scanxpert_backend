@@ -139,7 +139,7 @@ export const updateReport = async (id: string, newReportUrl: string[]) => {
   try {
     const updatedUser = await User.findByIdAndUpdate(
       id,
-      { $set: { report: newReportUrl } }, // Replaces the entire report array
+      { $push: { report: {$each: newReportUrl} } }, // Replaces the entire report array
       { new: true, runValidators: true }
     );
     return updatedUser;

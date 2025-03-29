@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import * as AuthService from './auth.services';
 import { uploadToCloudinary } from '../utils/cloudinary';
+import jwt from 'jsonwebtoken';
 
 export const checkUserExists = async (req: Request, res: Response) => {
   try {
@@ -25,7 +26,8 @@ export const verifyIdToken = async (req: Request, res: Response) => {
     }
 
     const result = await AuthService.checkOrCreateUser(phone);
-    return res.status(200).json({ exists: result.exists, userId: result.user._id, role: result.user.role });
+    const token = jwt.sign({ _id: result.user._id }, process.env.JWT_SECRET as string, { expiresIn: parseInt(process.env.JWT_EXPIRES_IN as string, 10) });
+    return res.status(200).json({ exists: result.exists, userId: result.user._id, role: result.user.role, token:token });
   } catch (err) {
     return res.status(401).json({ message: 'Invalid token', error: err });
   }

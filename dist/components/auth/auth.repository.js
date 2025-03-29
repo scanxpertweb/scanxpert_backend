@@ -100,7 +100,7 @@ exports.softDeleteUserById = softDeleteUserById;
 // src/repo/UserRepo.ts
 const updateReport = (id, newReportUrl) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const updatedUser = yield auth_model_1.User.findByIdAndUpdate(id, { $set: { report: newReportUrl } }, // Replaces the entire report array
+        const updatedUser = yield auth_model_1.User.findByIdAndUpdate(id, { $push: { report: { $each: newReportUrl } } }, // Replaces the entire report array
         { new: true, runValidators: true });
         return updatedUser;
     }

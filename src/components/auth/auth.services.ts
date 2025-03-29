@@ -25,7 +25,7 @@ export const checkOrCreateUser = async (
   const roleId = userRole?._id || new mongoose.Types.ObjectId('67e19486cae62de981c6062b');
 
   if (!roleId) throw new Error("User role not found"); 
-
+ 
   // Create new user
   const newUser: IUser = await UserRepo.createUser({
     phone,
@@ -35,6 +35,7 @@ export const checkOrCreateUser = async (
     report: data.report || [],
     role: roleId, // Pass a single ID
   });
+ 
 
   return { exists: false, user: newUser };
   } catch (error) {
