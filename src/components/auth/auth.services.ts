@@ -2,6 +2,7 @@ import admin from '../firebase/admin';
 import * as UserRepo from './auth.repository';
 import { findRole } from '../role/role.repository';
 import { IUser } from '../collections/auth.model';
+import mongoose from 'mongoose';
 
 export const verifyIdToken = async (idToken: string) => {
   return await admin.auth().verifyIdToken(idToken);
@@ -19,8 +20,8 @@ export const checkOrCreateUser = async (
   const role = await findRole();
 
   // Find the role for 'user' and get a single _id
-  const userRole = role.find((r) => r.name === data.role || "patient"); 
-  const roleId = userRole ? userRole._id : undefined; 
+  const userRole = role.find((r) => r.name === (data.role || "patient")); 
+  const roleId = userRole?._id || new mongoose.Types.ObjectId('67e19486cae62de981c6062b');
 
   if (!roleId) throw new Error("User role not found"); 
 
