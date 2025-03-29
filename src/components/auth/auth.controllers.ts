@@ -129,7 +129,7 @@ export const registerUser = async (req: Request, res: Response) => {
     console.error("❌ Unexpected error during registration:", err);
     return res.status(500).json({
       message: "Registration failed due to an unexpected error",
-      error: (err as Error).message,
+      error: `${(err as Error).message}`,
     });
   }
 };
