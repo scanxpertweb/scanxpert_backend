@@ -2,7 +2,7 @@ import multer from 'multer';
 import path from 'path';
 
 // Multer setup - store files temporarily in memory or disk
-const storage = multer.memoryStorage(); // or use diskStorage if needed
+export const storage = multer.memoryStorage(); // or use diskStorage if needed
 
 const fileFilter = (req: any, file: Express.Multer.File, cb: any) => {
   const allowedTypes = /pdf|doc|docx|jpg|jpeg|png/;

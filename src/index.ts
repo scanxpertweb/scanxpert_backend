@@ -4,6 +4,8 @@ import connectDB from './components/config/database';
 import authRoutes from './components/auth/auth.routes';
 import cors from 'cors';
 import roleRoutes from './components/role/role.routes';
+import multer from 'multer';
+import { storage } from './components/utils/multer';
 
 dotenv.config(); // Load .env variables
 
@@ -20,6 +22,8 @@ connectDB(); // ⬅️ Connect to MongoDB
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const upload = multer({ storage });
+app.use(upload.any());
 
 app.use('/api/auth', authRoutes)
 app.use('/api/role', roleRoutes)
