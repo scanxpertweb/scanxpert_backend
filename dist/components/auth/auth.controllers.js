@@ -73,7 +73,7 @@ const verifyIdToken = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         }
         const result = yield AuthService.checkOrCreateUser(phone);
         const token = jsonwebtoken_1.default.sign({ _id: result.user._id }, process.env.JWT_SECRET, { expiresIn: parseInt(process.env.JWT_EXPIRES_IN, 10) });
-        return res.status(200).json({ exists: result.exists, userId: result.user._id, role: result.user.role, token: token });
+        return res.status(200).json({ exists: result.exists, userId: result.user._id, name: result.user.name, role: result.user.role, token: token });
     }
     catch (err) {
         return res.status(401).json({ message: 'Invalid token', error: err });
