@@ -27,7 +27,7 @@ export const verifyIdToken = async (req: Request, res: Response) => {
 
     const result = await AuthService.checkOrCreateUser(phone);
     const token = jwt.sign({ _id: result.user._id }, process.env.JWT_SECRET as string, { expiresIn: parseInt(process.env.JWT_EXPIRES_IN as string, 10) });
-    return res.status(200).json({ exists: result.exists, userId: result.user._id, name:result.user.name, role: result.user.role, token:token });
+    return res.status(200).json({ exists: result.exists, userId: result.user._id, name: result.user.name, role: result.user.role, token:token });
   } catch (err) {
     return res.status(401).json({ message: 'Invalid token', error: err });
   }
